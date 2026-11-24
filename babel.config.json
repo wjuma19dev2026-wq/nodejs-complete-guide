@@ -1,0 +1,37 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        },
+        "modules": "commonjs"
+      }
+    ]
+  ],
+  // "env": {
+  //   // "minify": {
+  //   //   "presets": [
+  //   //     [
+  //   //       "minify",
+  //   //       {
+  //   //         "removeConsole": true,
+  //   //         "removeDebugger": true
+  //   //       }
+  //   //     ]
+  //   //   ]
+  //   // }
+  // },
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "@": "./src"
+        }
+      }
+    ]
+  ]
+}
