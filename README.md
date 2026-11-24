@@ -15,9 +15,9 @@ Repositorio de aprendizaje/trabajo que parte de un servidor Express mínimo y ya
 - **Variables de entorno** cargadas con el flag nativo `--env-file=.env` (sin dotenv).
 - **Modo desarrollo** con `nodemon` + `babel-node`: recarga automática al guardar cambios.
 - **Build de producción** a `dist/` con `@babel/cli`.
-- **Build minificado** con `terser-folder` (`*.min.js`, eliminación de `console` y `debugger`).
+- **Build minificado** con `terser-folder` (`*.min.js` por archivo, conservando un comentario identificador gracias a `-c/--comments`).
 - **Linting con ESLint 10** para JavaScript, JSON y CSS (plugins `@eslint/js`, `@eslint/json`, `@eslint/css`).
-- **Configuración de formateo con Prettier** (comillas simples, punto y coma, ancho 80, `arrowParens: avoid`, trailing comma), con reglas en `.prettierrc` y exclusiones en `.prettierignore`. Ver la nota sobre su instalación más abajo.
+- **Formateo con Prettier** (`^3.10.1`): comillas simples, punto y coma, ancho 80, `arrowParens: avoid`, trailing comma; reglas en `.prettierrc` y exclusiones en `.prettierignore`.
 - **Estilo de editor unificado con EditorConfig** (UTF-8, LF, 2 espacios, newline final).
 - **Hooks de Git con Husky 9** + **lint-staged**: cada commit aplica `eslint --fix` y `prettier --write` a los archivos modificados.
 - **Limpieza de artefactos** con `rimraf`.
@@ -26,7 +26,7 @@ Repositorio de aprendizaje/trabajo que parte de un servidor Express mínimo y ya
 
 ## 📋 Requisitos
 
-- **Node.js 20.6+** (necesario para el flag nativo `--env-file`; se recomienda una versión LTS reciente, compatible también con Babel 8).
+- **Node.js `^22.18.0 || >=24.11.0`** (requisito declarado por Babel 8 en `package-lock.json`; el flag nativo `--env-file` funciona desde Node 20.6).
 - **npm** (incluido con Node.js).
 - **Git** (para los hooks de Husky).
 
@@ -110,6 +110,8 @@ app.listen(port, () => {
 });
 ```
 
+> El campo `main` de `package.json` apunta a `index.js` en la raíz, que no existe; el entry point real es `src/index.js` (y `dist/index.js` en producción).
+
 Puntos de extensión naturales:
 
 - Registrar rutas y routers con `app.use(...)` / `app.get(...)`.
@@ -161,7 +163,9 @@ npx prettier --check . # comprueba el formato
 
 > No hay scripts dedicados de `lint`/`format` en `package.json`; se usan las herramientas directamente o a través de `lint-staged`.
 >
-> ⚠️ **Nota:** aunque `lint-staged` invoca `prettier --write`, el paquete `prettier` **no está declarado** en `devDependencies` ni instalado actualmente. Para que el formateo funcione en el hook, añádelo con `npm install --save-dev prettier`.
+> ⚠️ **Nota sobre los hooks:** el hook `.husky/pre-commit` existe, pero si `core.hooksPath` está vacío o no existe `.husky/_`, los hooks aún no están activos. Ejecuta `npm install` (o `npm run prepare`) para registrarlos.
+>
+> ℹ️ El preset `minify` de Babel con `removeConsole`/`removeDebugger` está **comentado** en `babel.config.json`, por lo que la minificación actual solo comprime el código (no elimina `console.log`).
 
 ---
 
@@ -175,7 +179,7 @@ npx prettier --check . # comprueba el formato
 
 - Babel: `@babel/cli`, `@babel/core`, `@babel/node`, `@babel/preset-env`, `babel-plugin-module-resolver`, `babel-preset-minify`
 - Servidor de desarrollo: `nodemon`
-- Calidad: `eslint` + `@eslint/js`, `@eslint/json`, `@eslint/css`, `globals`, `lint-staged` (Prettier requiere instalación; ver nota)
+- Calidad: `eslint` + `@eslint/js`, `@eslint/json`, `@eslint/css`, `globals`, `prettier`, `lint-staged`
 - Git: `husky`, `lint-staged`
 - Build: `rimraf`, `terser`, `terser-folder`, `cross-env`
 
